@@ -1,10 +1,10 @@
 local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
 local conf = require("telescope.config").values
-local Job = require("plenary.job")
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local custom_floating_buffer = require("custom_floating_buffer")
+local api_request = require("api_request")
 
 local function window_2(table_content)
 	pickers
@@ -33,20 +33,6 @@ local function window_2(table_content)
 		:find()
 end
 
-local function api_request(prompt)
-	Job:new({
-		command = "curl",
-		args = { "--silent", "https://www.dnd5eapi.co/api/2014/monsters/?name=" .. prompt },
-		on_exit = function(j, return_val)
-			local output_string = table.concat(j:result(), "\n")
-			vim.schedule(function()
-				local json = vim.json.decode(output_string).results
-				window_2(json)
-			end)
-		end,
-	}):start()
-end
-
 local function window_1()
 	pickers
 		.new({}, {
@@ -59,7 +45,7 @@ local function window_1()
 				actions.select_default:replace(function()
 					actions.close(prompt_bufnr)
 					local selection = action_state.get_selected_entry()
-					api_request(selection[1])
+					api_request.send(selection[1], window_2)
 				end)
 				return true
 			end,
