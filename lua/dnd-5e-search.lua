@@ -4,107 +4,69 @@ local conf = require("telescope.config").values
 local Job = require("plenary.job")
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
-
-local function open_floating_window(lines)
-  local buf = vim.api.nvim_create_buf(false, true) -- unlisted, scratch
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-
-  local width = math.floor(vim.o.columns * 0.8)
-  local height = math.floor(vim.o.lines * 0.6)
-  local row = math.floor((vim.o.lines - height) / 2)
-  local col = math.floor((vim.o.columns - width) / 2)
-
-  local opts = {
-    style = "minimal",
-    relative = "editor",
-    width = width,
-    height = height,
-    row = row,
-    col = col,
-    border = "rounded",
-  }
-
-  local win = vim.api.nvim_open_win(buf, true, opts)
-
-  -- Match Telescope-like style
-  vim.api.nvim_win_set_option(win, "winhighlight", "Normal:NormalFloat,FloatBorder:TelescopeBorder")
-
-  -- Keymap to close on Escape
-  vim.api.nvim_buf_set_keymap(buf, "n", "<Esc>", "", {
-    nowait = true,
-    noremap = true,
-    silent = true,
-    callback = function()
-      if vim.api.nvim_win_is_valid(win) then
-        vim.api.nvim_win_close(win, true)
-      end
-    end,
-  })
-
-  return buf, win
-end
+local custom_floating_buffer = require("custom_floating_buffer")
 
 local function window_2(table_content)
-  pickers
-      .new({}, {
-        prompt_title = "window_2",
-        finder = finders.new_table({
-          results = table_content,
-          entry_maker = function(entry)
-            return {
-              value = entry.index,
-              ordinal = entry.name,
-              display = entry.name,
-            }
-          end,
-        }),
-        sorter = conf.generic_sorter({}),
-        attach_mappings = function(prompt_bufnr, map)
-          actions.select_default:replace(function()
-            actions.close(prompt_bufnr)
-            local selection = action_state.get_selected_entry()
-            open_floating_window({ "Test", "Test2", "Test3" })
-          end)
-          return true
-        end,
-      })
-      :find()
+	pickers
+		.new({}, {
+			prompt_title = "window_2",
+			finder = finders.new_table({
+				results = table_content,
+				entry_maker = function(entry)
+					return {
+						value = entry.index,
+						ordinal = entry.name,
+						display = entry.name,
+					}
+				end,
+			}),
+			sorter = conf.generic_sorter({}),
+			attach_mappings = function(prompt_bufnr, map)
+				actions.select_default:replace(function()
+					actions.close(prompt_bufnr)
+					local selection = action_state.get_selected_entry()
+					custom_floating_buffer.open_floating_window({ "Test", "Test2", "Test3" })
+				end)
+				return true
+			end,
+		})
+		:find()
 end
 
 local function api_request(prompt)
-  Job:new({
-    command = "curl",
-    args = { "--silent", "https://www.dnd5eapi.co/api/2014/monsters/?name=" .. prompt },
-    on_exit = function(j, return_val)
-      local output_string = table.concat(j:result(), "\n")
-      vim.schedule(function()
-        local json = vim.json.decode(output_string).results
-        window_2(json)
-      end)
-    end,
-  }):start()
+	Job:new({
+		command = "curl",
+		args = { "--silent", "https://www.dnd5eapi.co/api/2014/monsters/?name=" .. prompt },
+		on_exit = function(j, return_val)
+			local output_string = table.concat(j:result(), "\n")
+			vim.schedule(function()
+				local json = vim.json.decode(output_string).results
+				window_2(json)
+			end)
+		end,
+	}):start()
 end
 
 local function window_1()
-  pickers
-      .new({}, {
-        prompt_title = "window_1",
-        finder = finders.new_job(function(prompt)
-          return { "echo", prompt }
-        end),
-        sorter = conf.generic_sorter({}),
-        attach_mappings = function(prompt_bufnr, map)
-          actions.select_default:replace(function()
-            actions.close(prompt_bufnr)
-            local selection = action_state.get_selected_entry()
-            api_request(selection[1])
-          end)
-          return true
-        end,
-      })
-      :find()
+	pickers
+		.new({}, {
+			prompt_title = "window_1",
+			finder = finders.new_job(function(prompt)
+				return { "echo", prompt }
+			end),
+			sorter = conf.generic_sorter({}),
+			attach_mappings = function(prompt_bufnr, map)
+				actions.select_default:replace(function()
+					actions.close(prompt_bufnr)
+					local selection = action_state.get_selected_entry()
+					api_request(selection[1])
+				end)
+				return true
+			end,
+		})
+		:find()
 end
 
 vim.api.nvim_create_user_command("DnDMonsterManual", function()
-  window_1()
+	window_1()
 end, {})
