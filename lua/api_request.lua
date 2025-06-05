@@ -5,7 +5,7 @@ return {
 	send = function(prompt, callback)
 		Job:new({
 			command = "curl",
-			args = { "--silent", constants.BASE_URL .. "monsters/?name=" .. prompt },
+			args = { "--silent", constants.BASE_URL .. prompt },
 			on_exit = function(j, return_val)
 				--TODO: Error handling
 				local output_string = table.concat(j:result(), "\n")
