@@ -20,6 +20,8 @@ return {
 					end,
 				}),
 				sorter = conf.generic_sorter({}),
+				sorting_strategy = "ascending",
+				scroll_strategy = "limit",
 				attach_mappings = function(prompt_bufnr, map)
 					actions.select_default:replace(function()
 						actions.close(prompt_bufnr)
