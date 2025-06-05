@@ -3,12 +3,16 @@ local finders = require("telescope.finders")
 local conf = require("telescope.config").values
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
+local constants = require("constants")
 
 return {
 	draw = function(table_content)
 		pickers
 			.new({}, {
-				prompt_title = "window_2",
+				prompt_title = constants.MONSTER_MANUAL_ICON .. "Monster Manual",
+				--INFO: entries shown at once are limited to 200 or so by default
+				-- -> maybe see how to change this in case it becomes annoying, but
+				-- seems fine for now
 				finder = finders.new_table({
 					results = table_content,
 					entry_maker = function(entry)
