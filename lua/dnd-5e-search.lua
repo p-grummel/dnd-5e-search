@@ -3,9 +3,11 @@ local constants = require("constants")
 local telescope_buffer = require("telescope_buffer")
 
 local function open_monster_manual()
-  api_request.send_list_request(constants.ALL_MONSTERS_URL, telescope_buffer.draw)
+	api_request.send(true, constants.ALL_MONSTERS_URL, function(data)
+		telescope_buffer.draw(data)
+	end)
 end
 
 vim.api.nvim_create_user_command("DnDMonsterManual", function()
-  open_monster_manual()
+	open_monster_manual()
 end, {})

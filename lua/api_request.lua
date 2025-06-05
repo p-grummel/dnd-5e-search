@@ -6,7 +6,7 @@ local function sort_by_name(entry_1, entry_2)
 end
 
 return {
-	send_list_request = function(prompt, callback)
+	send = function(sort, prompt, callback)
 		Job:new({
 			command = "curl",
 			args = { "--silent", constants.BASE_URL .. prompt },
@@ -15,7 +15,9 @@ return {
 				local output_string = table.concat(j:result(), "\n")
 				vim.schedule(function()
 					local json = vim.json.decode(output_string).results
-					table.sort(json, sort_by_name)
+					if sort then
+						table.sort(json, sort_by_name)
+					end
 					callback(json)
 				end)
 			end,
