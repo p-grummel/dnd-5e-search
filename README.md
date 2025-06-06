@@ -15,3 +15,4 @@ Things to add:
     - status effects
     - damage types
     - linking between "wiki" pages
+
