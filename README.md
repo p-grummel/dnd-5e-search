@@ -1,5 +1,8 @@
 # dnd-5e-search
 
+## For now, this only uses the 2014 version of dnd, maybe make another
+## application for later versions at some other point
+
 Commands: (ideas)
     - (TODO): DnDMenu -> Opens Menu with ability to select other options
     - "DnDMonsterManual" -> Opens search for Monsters

@@ -13,11 +13,5 @@ local function open_monster_manual()
 end
 
 vim.api.nvim_create_user_command("DnDMonsterManual", function()
-	-- open_monster_manual()
-	require("custom_floating_buffer").open_floating_window({
-		"# Markdown test",
-		"_test_ __test__",
-		"> [!info] test",
-		"> lalala",
-	})
+	open_monster_manual()
 end, {})
