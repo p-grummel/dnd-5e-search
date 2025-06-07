@@ -2,54 +2,92 @@ local utils = require("utils")
 
 return {
 
-  display_monster = function(entry)
-    local title_section = function()
-      return {
-        "___.:" .. entry.name .. ":.___",
-        "",
-        entry.size
-        .. " "
-        .. entry.type
-        .. (entry.subtype and " (" .. entry.subtype .. ")" or "")
-        .. ", "
-        .. entry.alignment,
-        "___",
-      }
-    end
+	display_monster = function(entry)
+		local title_section = function()
+			return {
+				"___.:" .. entry.name .. ":.___",
+				"",
+				entry.size
+					.. " "
+					.. entry.type
+					.. (entry.subtype and " (" .. entry.subtype .. ")" or "")
+					.. ", "
+					.. entry.alignment,
+				"___",
+			}
+		end
 
-    local ac_speed_hp_section = function()
-      local armor_pieces_string = function()
-        if entry.armor_class[1].armor then
-          local t = {}
-          for index, i in ipairs(entry.armor_class[1].armor) do
-            table.insert(t, (index == 1 and i.name or ", " .. i.name))
-          end
-          return " *(" .. table.concat(t) .. ")*"
-        else
-          return ""
-        end
-      end
+		local ac_speed_hp_section = function()
+			local armor_pieces_string = function()
+				if entry.armor_class[1].armor then
+					local t = {}
+					for index, i in ipairs(entry.armor_class[1].armor) do
+						table.insert(t, (index == 1 and i.name or ", " .. i.name))
+					end
+					return " *(" .. table.concat(t) .. ")*"
+				else
+					return ""
+				end
+			end
 
-      local speed_types = function()
-        local t = {}
-        for k, v in pairs(entry.speed) do
-          table.insert(t, "- " .. k .. ": " .. v)
-        end
-        return t
-      end
+			local speed_types = function()
+				local t = {}
+				for k, v in pairs(entry.speed) do
+					table.insert(t, "- " .. k .. ": " .. v)
+				end
+				return t
+			end
 
-      return utils.merge_tables({
-        {
-          "**Armor Class**: " .. entry.armor_class[1].value .. armor_pieces_string(),
-          "**HP**: " .. entry.hit_points,
-          "___",
-          "**Speed**: ",
-        },
-        speed_types(),
-        { "___" },
-      })
-    end
+			return utils.merge_tables({
+				{
+					"**Armor Class**: " .. entry.armor_class[1].value .. armor_pieces_string(),
+					"**HP**: " .. entry.hit_points,
+					"___",
+					"**Speed**: ",
+				},
+				speed_types(),
+				{ "___" },
+			})
+		end
 
-    return utils.merge_tables({ title_section(), ac_speed_hp_section() })
-  end,
+		local stat_section = function()
+			return {
+				"| **STR** | **DEX** | **CON** | **INT** | **WIS** | **CHA** |",
+				"|---|---|---|---|---|---|",
+				"| "
+					.. entry.strength
+					.. " ("
+					.. utils.ability_score_to_modifier(entry.strength)
+					.. ")"
+					.. " | "
+					.. entry.dexterity
+					.. " ("
+					.. utils.ability_score_to_modifier(entry.dexterity)
+					.. ")"
+					.. " | "
+					.. entry.constitution
+					.. " ("
+					.. utils.ability_score_to_modifier(entry.constitution)
+					.. ")"
+					.. " | "
+					.. entry.intelligence
+					.. " ("
+					.. utils.ability_score_to_modifier(entry.intelligence)
+					.. ")"
+					.. " | "
+					.. entry.wisdom
+					.. " ("
+					.. utils.ability_score_to_modifier(entry.wisdom)
+					.. ")"
+					.. " | "
+					.. entry.charisma
+					.. " ("
+					.. utils.ability_score_to_modifier(entry.charisma)
+					.. ")"
+					.. " |",
+			}
+		end
+
+		return utils.merge_tables({ title_section(), ac_speed_hp_section(), stat_section() })
+	end,
 }
