@@ -1,6 +1,6 @@
 local utils = require("utils")
 
-function title_section(entry)
+local function title_section(entry)
 	return {
 		"___.:" .. entry.name .. ":.___",
 		"",
@@ -14,7 +14,7 @@ function title_section(entry)
 	}
 end
 
-function ac_speed_hp_section(entry)
+local function ac_speed_hp_section(entry)
 	local armor_pieces_string = function()
 		if entry.armor_class[1].armor then
 			local t = {}
@@ -55,7 +55,7 @@ function ac_speed_hp_section(entry)
 	})
 end
 
-function stat_section(entry)
+local function stat_section(entry)
 	return {
 		"| **STR** | **DEX** | **CON** | **INT** | **WIS** | **CHA** |",
 		"|---|---|---|---|---|---|",
@@ -90,11 +90,21 @@ function stat_section(entry)
 			.. utils.ability_score_to_modifier(entry.charisma)
 			.. ")"
 			.. " |",
+		"___",
 	}
+end
+
+local function description_section(entry)
+	return { entry.desc and "*" .. entry.desc .. "*" or "" }
 end
 
 return {
 	display_monster = function(entry)
-		return utils.merge_tables({ title_section(entry), ac_speed_hp_section(entry), stat_section(entry) })
+		return utils.merge_tables({
+			title_section(entry),
+			ac_speed_hp_section(entry),
+			stat_section(entry),
+			description_section(entry),
+		})
 	end,
 }
