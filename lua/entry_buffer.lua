@@ -1,19 +1,4 @@
-local function display_monster(entry)
-  return {
-    "___.:" .. entry.name .. ":.___",
-    "",
-    "- _"
-    .. entry.size
-    .. " "
-    .. entry.type
-    .. (entry.subtype and " (" .. entry.subtype .. ")" or "")
-    .. ", "
-    .. entry.alignment
-    .. "._",
-    "---",
-    "",
-  }
-end
+local display_helper = require("display_helper")
 
 local function config_window(lines)
   local buf = vim.api.nvim_create_buf(false, true) -- unlisted, scratch
@@ -66,7 +51,7 @@ end
 return {
 
   open = function(entry)
-    local lines = display_monster(entry)
+    local lines = display_helper.display_monster(entry)
     config_window(lines)
   end,
 }
