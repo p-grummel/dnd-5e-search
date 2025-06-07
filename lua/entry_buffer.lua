@@ -1,4 +1,4 @@
-local function generate_lines_from_entry(entry)
+local function display_monster(entry)
   return {
     "___.:" .. entry.name .. ":.___",
     "",
@@ -20,6 +20,7 @@ local function config_window(lines)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 
   vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+
   --TODO: comment back in, made editable for test purposes
   -- vim.api.nvim_buf_set_option(buf, "modifiable", false)
   -- vim.api.nvim_buf_set_option(buf, "readonly", true)
@@ -40,8 +41,6 @@ local function config_window(lines)
   }
 
   local win = vim.api.nvim_open_win(buf, true, opts)
-
-  vim.api.nvim_win_set_cursor(win, { 2, 0 })
 
   -- Match Telescope-like style
   vim.api.nvim_win_set_option(win, "winhighlight", "Normal:NormalFloat,FloatBorder:TelescopeBorder")
@@ -67,7 +66,7 @@ end
 return {
 
   open = function(entry)
-    local lines = generate_lines_from_entry(entry)
+    local lines = display_monster(entry)
     config_window(lines)
   end,
 }
