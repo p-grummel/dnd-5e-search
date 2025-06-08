@@ -1,7 +1,9 @@
 local display_helper = require("display_helper")
 
-local function config_window(lines)
-  local buf = vim.api.nvim_create_buf(false, true) -- unlisted, scratch
+local function config_window(entry)
+  local lines = display_helper.display_monster(entry)
+
+  local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 
   vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
@@ -15,43 +17,18 @@ local function config_window(lines)
   local row = math.floor((vim.o.lines - height) / 2)
   local col = math.floor((vim.o.columns - width) / 2)
 
-  local opts = {
-    style = "minimal",
-    relative = "editor",
-    width = width,
-    height = height,
-    row = row,
-    col = col,
-    border = "rounded",
-  }
+  vim.cmd("tabnew")
 
-  local win = vim.api.nvim_open_win(buf, true, opts)
+  vim.api.nvim_win_set_buf(0, buf)
+  vim.bo[buf].filetype = "markdown"
 
-  -- Match Telescope-like style
-  vim.api.nvim_win_set_option(win, "winhighlight", "Normal:NormalFloat,FloatBorder:TelescopeBorder")
+  vim.api.nvim_buf_set_name(buf, entry.name)
 
-  -- Keymap to close on Escape or q
-  local close_table = {
-    nowait = true,
-    noremap = true,
-    silent = true,
-    callback = function()
-      if vim.api.nvim_win_is_valid(win) then
-        vim.api.nvim_win_close(win, true)
-      end
-    end,
-  }
-
-  vim.api.nvim_buf_set_keymap(buf, "n", "<Esc>", "", close_table)
-  vim.api.nvim_buf_set_keymap(buf, "n", "q", "", close_table)
-
-  return buf, win
+  return buf
 end
 
 return {
-
   open = function(entry)
-    local lines = display_helper.display_monster(entry)
-    config_window(lines)
+    config_window(entry)
   end,
 }
