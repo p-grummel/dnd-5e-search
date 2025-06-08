@@ -94,6 +94,18 @@ local function stat_section(entry)
 	}
 end
 
+local function proficiency_section(entry)
+	local function saving_throws()
+		local t = { "> [!tip] Proficiencies" }
+		for _, i in ipairs(entry.proficiencies) do
+			table.insert(t, "> *" .. i.proficiency.name .. "* " .. i.value)
+		end
+		table.insert(t, "***")
+		return t
+	end
+	return utils.merge_tables({ saving_throws() })
+end
+
 local function description_section(entry)
 	return { entry.desc and "*" .. entry.desc .. "*" or "" }
 end
@@ -104,6 +116,7 @@ return {
 			title_section(entry),
 			ac_speed_hp_section(entry),
 			stat_section(entry),
+			proficiency_section(entry),
 			description_section(entry),
 		})
 	end,
